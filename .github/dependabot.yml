@@ -1,14 +1,11 @@
+# Only GitHub Actions: application dependencies are updated in the private
+# source repository and arrive here with the next export.
 version: 2
 updates:
-  - package-ecosystem: gomod
-    directory: /
-    schedule:
-      interval: monthly
-    groups:
-      go-dependencies:
-        patterns: ["*"]
-
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    groups:
+      github-actions:
+        patterns: ["*"]
