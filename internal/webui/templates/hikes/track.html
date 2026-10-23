@@ -1,0 +1,24 @@
+{{ define "hikes/track.html" }}
+  {{ template "partials/header.html" . }}
+
+
+  <div class="mx-auto max-w-5xl">
+    <a
+      href="/hikes/{{ .Panel.Hike.ID }}"
+      class="
+            text-sm font-medium
+            text-stone-500
+            hover:text-stone-900
+        "
+    >
+      ← Back to hike
+    </a>
+
+    <div class="mt-6">
+      {{ template "hikes/track-panel.html" .Panel }}
+    </div>
+  </div>
+
+  {{ template "partials/footer.html" . }}
+
+{{ end }}

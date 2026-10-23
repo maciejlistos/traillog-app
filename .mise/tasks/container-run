@@ -1,0 +1,29 @@
+#!/usr/bin/env nu
+
+#MISE description="Run the production TrailLog container locally"
+
+let image = (
+    $env.TRAILLOG_IMAGE?
+    | default "traillog:dev"
+)
+
+
+docker volume create traillog-data | ignore
+
+(
+  docker run
+      --rm
+      --name traillog
+      --publish 8080:8080
+      --read-only
+      --user "65532:65532"
+      --cap-drop ALL
+      --security-opt no-new-privileges:true
+      --volume traillog-data:/data
+      --env TRAILLOG_ENVIRONMENT=prod
+      --env TRAILLOG_DATABASE_PATH=/data/traillog.db
+      --env TRAILLOG_LOG_FORMAT=json
+      --env OTEL_TRACES_EXPORTER=none
+      --env OTEL_METRICS_EXPORTER=none
+      $image
+)

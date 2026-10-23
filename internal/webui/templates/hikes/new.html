@@ -1,0 +1,26 @@
+{{define "hikes/new.html"}} {{template "partials/header.html" .}}
+
+<div class="mx-auto max-w-2xl">
+  <a
+    href="/hikes"
+    class="text-sm font-medium text-stone-500 hover:text-stone-900"
+  >
+    ← Back to hikes
+  </a>
+
+  <div class="mt-6">
+    <h1 class="text-3xl font-bold tracking-tight text-stone-950">Add a hike</h1>
+
+    <p class="mt-2 text-stone-600">
+      Record a route or place you want to explore.
+    </p>
+  </div>
+
+  <div
+    class="mt-8 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8"
+  >
+    {{template "hikes/form.html" .}}
+  </div>
+</div>
+
+{{template "partials/footer.html" .}} {{end}}

@@ -1,0 +1,40 @@
+{{define "hikes/create-success.html"}}
+
+<div
+  id="new-hike-form-panel"
+  class="rounded-2xl border border-emerald-200 bg-emerald-50 p-6"
+  role="status"
+>
+  <p class="font-semibold text-emerald-900">Hike saved</p>
+
+  <p class="mt-1 text-sm text-emerald-800">
+    {{.Hike.Name}} was added to TrailLog.
+  </p>
+
+  <div class="mt-4 flex gap-4">
+    <a
+      href="/hikes/{{.Hike.ID}}"
+      class="text-sm font-semibold text-emerald-800 hover:text-emerald-950"
+    >
+      View hike →
+    </a>
+
+    <a
+      href="/hikes/new"
+      hx-get="/hikes/new"
+      hx-target="#new-hike-panel"
+      hx-swap="innerHTML"
+      class="text-sm font-medium text-emerald-700 hover:text-emerald-900"
+    >
+      Add another
+    </a>
+  </div>
+</div>
+
+<div hx-swap-oob="afterbegin:#hike-list">
+  {{template "hikes/card.html" .Hike}}
+</div>
+
+<div hx-swap-oob="delete:#hike-empty-state"></div>
+
+{{end}}

@@ -1,0 +1,27 @@
+{
+  "name": "traillog",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "css:build": "npx @tailwindcss/cli -i ./web/styles/app.css -o ./web/static/css/app.css --minify",
+    "css:watch": "npx @tailwindcss/cli -i ./web/styles/app.css -o ./web/static/css/app.css --watch",
+    "js:build": "mkdir -p ./web/static/js && cp ./node_modules/htmx.org/dist/htmx.min.js ./web/static/js/htmx.min.js",
+    "assets:build": "npm run css:build && npm run js:build && npm run leaflet:build",
+    "leaflet:build": "rm -rf ./web/static/vendor/leaflet && mkdir -p ./web/static/vendor/leaflet && cp ./node_modules/leaflet/dist/leaflet.js ./web/static/vendor/leaflet/leaflet.js && cp ./node_modules/leaflet/dist/leaflet.css ./web/static/vendor/leaflet/leaflet.css && cp -R ./node_modules/leaflet/dist/images ./web/static/vendor/leaflet/images"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "htmx.org": "^2.0.10",
+    "prettier": "^3.9.6",
+    "prettier-plugin-go-template": "^0.0.15",
+    "tailwindcss": "^4.3.3"
+  },
+  "dependencies": {
+    "leaflet": "1.9.4"
+  }
+}

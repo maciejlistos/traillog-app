@@ -1,0 +1,76 @@
+services:
+  tempo:
+    image: grafana/tempo:3.0.0
+
+    command:
+      - -config.file=/etc/tempo.yaml
+
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml:ro
+      - tempo-data:/var/tempo
+
+    ports:
+      - "3200:3200"
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+
+    command:
+      - --config=/etc/otelcol-contrib/config.yaml
+
+    volumes:
+      - ./otel-collector.yaml:/etc/otelcol-contrib/config.yaml:ro
+
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+
+      # Collector Prometheus exporter.
+      - "8889:8889"
+
+      # Collector health endpoint.
+      - "13133:13133"
+
+    depends_on:
+      - tempo
+
+  prometheus:
+    image: prom/prometheus:latest
+
+    command:
+      - --config.file=/etc/prometheus/prometheus.yaml
+      - --storage.tsdb.path=/prometheus
+
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - prometheus-data:/prometheus
+
+    ports:
+      - "9090:9090"
+
+    depends_on:
+      - otel-collector
+
+  grafana:
+    image: grafana/grafana:latest
+
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      - prometheus
+      - tempo
+
+volumes:
+  tempo-data:
+  prometheus-data:
+  grafana-data:

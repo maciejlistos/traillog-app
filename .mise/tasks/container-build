@@ -1,0 +1,41 @@
+#!/usr/bin/env nu
+
+#MISE description="Build the TrailLog production container image"
+
+let version = (
+    git describe --tags --always --dirty
+    | str trim
+)
+
+let revision = (
+    git rev-parse HEAD
+    | str trim
+)
+
+let build_time = (
+    date now
+    | date to-timezone UTC
+    | format date "%Y-%m-%dT%H:%M:%SZ"
+)
+
+let image = (
+    $env.TRAILLOG_IMAGE?
+    | default "traillog:dev"
+)
+
+
+print $"Building ($image)"
+print $"Version:   ($version)"
+print $"Revision:  ($revision)"
+print $"Build time: ($build_time)"
+
+
+(
+  docker build 
+    --platform linux/amd64
+    --build-arg $"VERSION=($version)"
+    --build-arg $"REVISION=($revision)"
+    --build-arg $"BUILD_TIME=($build_time)"
+    --tag $image
+    .
+)

@@ -1,0 +1,12 @@
+  {
+    "plugins": ["prettier-plugin-go-template"],
+    "overrides": [
+      {
+        "files": ["internal/webui/templates/**/*.html"],
+        "options": {
+          "parser": "go-template"
+        }
+      }
+    ]
+  }
+

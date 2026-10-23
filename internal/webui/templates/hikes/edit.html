@@ -1,0 +1,14 @@
+{{define "hikes/edit.html"}} {{template "partials/header.html" .}}
+
+<div class="mx-auto max-w-2xl">
+  <a
+    href="{{.CancelURL}}"
+    class="text-sm font-medium text-stone-500 hover:text-stone-900"
+  >
+    ← Back to hike
+  </a>
+
+  <div class="mt-6">{{template "hikes/form-panel.html" .}}</div>
+</div>
+
+{{template "partials/footer.html" .}} {{end}}

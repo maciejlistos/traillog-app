@@ -1,0 +1,93 @@
+{{define "hikes/list-results.html"}}
+
+<section id="hike-results" aria-live="polite">
+  <div class="mb-4 flex items-center justify-between gap-4">
+    <p class="text-sm text-stone-500">
+      {{if eq .Total 1}} 1 hike {{else}} {{.Total}} hikes {{end}}
+    </p>
+
+    {{if gt .TotalPages 1}}
+    <p class="text-sm text-stone-500">Page {{.Page}} of {{.TotalPages}}</p>
+    {{end}}
+  </div>
+
+  {{if .Hikes}}
+
+  <div id="hike-list" class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+    {{range .Hikes}} {{template "hikes/card.html" .}} {{end}}
+  </div>
+
+  {{else}}
+
+  <div
+    id="hike-empty-state"
+    class="rounded-2xl border border-dashed border-stone-300 bg-white px-6 py-16 text-center"
+  >
+    {{if .HasFilters}}
+
+    <h2 class="text-lg font-semibold text-stone-900">No matching hikes</h2>
+
+    <p class="mt-2 text-stone-600">Try changing the search text or filters.</p>
+
+    {{else}}
+
+    <h2 class="text-lg font-semibold text-stone-900">No hikes yet</h2>
+
+    <p class="mt-2 text-stone-600">
+      Add your first route or place to start your hiking journal.
+    </p>
+
+    {{end}}
+  </div>
+
+  {{end}} {{if gt .TotalPages 1}}
+
+  <nav
+    class="mt-8 flex items-center justify-between border-t border-stone-200 pt-6"
+    aria-label="Pagination"
+  >
+    {{if .PreviousURL}}
+
+    <a
+      href="{{.PreviousURL}}"
+      hx-get="{{.PreviousURL}}"
+      hx-target="#hike-results"
+      hx-swap="outerHTML"
+      hx-push-url="true"
+      class="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"
+    >
+      ← Previous
+    </a>
+
+    {{else}}
+
+    <span></span>
+
+    {{end}}
+
+    <span class="text-sm text-stone-500"> {{.Page}} / {{.TotalPages}} </span>
+
+    {{if .NextURL}}
+
+    <a
+      href="{{.NextURL}}"
+      hx-get="{{.NextURL}}"
+      hx-target="#hike-results"
+      hx-swap="outerHTML"
+      hx-push-url="true"
+      class="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"
+    >
+      Next →
+    </a>
+
+    {{else}}
+
+    <span></span>
+
+    {{end}}
+  </nav>
+
+  {{end}}
+</section>
+
+{{end}}

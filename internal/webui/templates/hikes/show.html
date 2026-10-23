@@ -1,0 +1,229 @@
+{{ define "hikes/show.html" }}
+  {{ template "partials/header.html" . }}
+
+
+  <div class="mx-auto max-w-3xl">
+    <a
+      href="/hikes"
+      class="text-sm font-medium text-stone-500 hover:text-stone-900"
+    >
+      ← Back to hikes
+    </a>
+
+    <div class="mt-6">
+      {{ template "hikes/detail.html" . }}
+      <section
+        id="hike-track-panel"
+        hx-get="/hikes/{{ .Hike.ID }}/track"
+        hx-trigger="load"
+        hx-target="this"
+        hx-swap="outerHTML"
+        class="
+        mt-8 rounded-2xl
+        border border-stone-200
+        bg-white p-6
+        shadow-sm
+    "
+      >
+        <div
+          class="
+            flex items-center
+            justify-between gap-4
+        "
+        >
+          <div>
+            <h2
+              class="
+                    text-xl font-semibold
+                    text-stone-950
+                "
+            >
+              Route
+            </h2>
+
+            <p
+              class="
+                    mt-1 text-sm
+                    text-stone-500
+                "
+            >
+              Loading GPX route information…
+            </p>
+          </div>
+
+          <a
+            href="/hikes/{{ .Hike.ID }}/track"
+            class="
+                text-sm font-medium
+                text-emerald-700
+                hover:text-emerald-900
+            "
+          >
+            View route details
+          </a>
+        </div>
+      </section>
+      <section
+        class="mt-8 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8"
+      >
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-semibold text-stone-950">Visit history</h2>
+
+            <p class="mt-1 text-sm text-stone-500">
+              Record when you walked this route.
+            </p>
+          </div>
+
+          {{ if .Visits }}
+            <span
+              class="rounded-full bg-stone-100 px-3 py-1 text-sm text-stone-600"
+            >
+              {{ len .Visits }} visits
+            </span>
+          {{ end }}
+        </div>
+
+        <div class="mt-6 space-y-4">
+          {{ range .Visits }}
+
+            <article class="rounded-xl bg-stone-50 p-5">
+              <div class="flex items-center justify-between gap-4">
+                <strong class="text-stone-900">
+                  {{ formatVisitDate .VisitedAt }}
+                </strong>
+
+                {{ if .Rating }}
+                  <span class="text-sm font-medium text-amber-700">
+                    {{ .Rating }} / 5
+                  </span>
+                {{ end }}
+              </div>
+
+              {{ if .Weather }}
+                <p class="mt-2 text-sm text-stone-500">{{ .Weather }}</p>
+              {{ end }}
+              {{ if .Notes }}
+                <p class="mt-3 whitespace-pre-line text-stone-700">
+                  {{ .Notes }}
+                </p>
+              {{ end }}
+            </article>
+          {{ else }}
+
+            <p class="text-sm text-stone-500">No visits recorded yet.</p>
+          {{ end }}
+        </div>
+
+        <form
+          method="post"
+          action="/hikes/{{ .Hike.ID }}/visits"
+          class="mt-8 grid gap-4 border-t border-stone-200 pt-8 md:grid-cols-2"
+        >
+          <div>
+            <label
+              for="visited_at"
+              class="block text-sm font-medium text-stone-700"
+            >
+              Visit date
+            </label>
+
+            <input
+              id="visited_at"
+              name="visited_at"
+              type="date"
+              value="{{ .VisitForm.VisitedAt }}"
+              class="mt-2 block w-full rounded-lg border border-stone-300 px-3 py-2"
+            />
+
+            {{ with index .VisitForm.Errors "visited_at" }}
+              <p class="mt-2 text-sm text-red-700">{{ . }}</p>
+            {{ end }}
+          </div>
+
+          <div>
+            <label
+              for="rating"
+              class="block text-sm font-medium text-stone-700"
+            >
+              Rating
+            </label>
+
+            <select
+              id="rating"
+              name="rating"
+              class="mt-2 block w-full rounded-lg border border-stone-300 px-3 py-2"
+            >
+              <option value="">Not rated</option>
+
+              {{ range $rating := seq 1 5 }}
+                <option
+                  value="{{ $rating }}"
+                  {{ if
+                    eqStringInt
+                    $.VisitForm.Rating
+                    $rating
+                  }}
+                    selected
+                  {{ end }}
+                >
+                  {{ $rating }} / 5
+                </option>
+              {{ end }}
+            </select>
+
+            {{ with index .VisitForm.Errors "rating" }}
+              <p class="mt-2 text-sm text-red-700">{{ . }}</p>
+            {{ end }}
+          </div>
+
+          <div>
+            <label
+              for="weather"
+              class="block text-sm font-medium text-stone-700"
+            >
+              Weather
+            </label>
+
+            <input
+              id="weather"
+              name="weather"
+              value="{{ .VisitForm.Weather }}"
+              placeholder="Sunny, cloudy, rain…"
+              class="mt-2 block w-full rounded-lg border border-stone-300 px-3 py-2"
+            />
+          </div>
+
+          <div class="md:col-span-2">
+            <label
+              for="visit_notes"
+              class="block text-sm font-medium text-stone-700"
+            >
+              Notes
+            </label>
+
+            <textarea
+              id="visit_notes"
+              name="notes"
+              rows="3"
+              class="mt-2 block w-full rounded-lg border border-stone-300 px-3 py-2"
+            >
+{{ .VisitForm.Notes }}</textarea>
+          </div>
+
+          <div class="md:col-span-2">
+            <button
+              type="submit"
+              class="rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800"
+            >
+              Add visit
+            </button>
+          </div>
+        </form>
+      </section>
+      {{ template "hikes/tags-panel.html" .TagsPanel }}
+    </div>
+  </div>
+
+  {{ template "partials/footer.html" . }}
+{{ end }}

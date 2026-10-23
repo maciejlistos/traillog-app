@@ -1,0 +1,82 @@
+[tools]
+go = "1.26.5"
+
+[tasks.server]
+description = "Run the application"
+depends = ["assets-build"]
+run = "go run ./cmd/traillog/"
+
+[tasks.test]
+description = "Run tests"
+run = "go test ./..."
+
+[tasks.test-race]
+description = "Run tests with the race detector"
+run = "go test -race ./..."
+
+[tasks.fmt]
+description = "Format Go source files"
+run = "go fmt ./..."
+
+[tasks.fmt-check]
+description = "Check Go source formatting"
+run = '''
+files="$(gofmt -l .)"
+if [ -n "$files" ]; then
+  echo "These files need formatting:"
+  printf '%s\n' "$files"
+  exit 1
+fi
+'''
+
+[tasks.vet]
+description = "Run go vet"
+run = "go vet ./..."
+
+[tasks.check]
+description = "Run formatting, vet, and test checks"
+depends = ["fmt-check", "vet", "test"]
+
+[tasks.assets-build]
+description = "Build all frontend assets"
+run = "npm run assets:build"
+
+[tasks.css-build]
+description = "Build CSS assets"
+run = "npm run css:build"
+
+[tasks.css-watch]
+description = "Watch and rebuild CSS assets"
+run = "npm run css:watch"
+
+[tasks.js-build]
+description = "Build JavaScript assets"
+run = "npm run js:build"
+
+[tasks.observability-up]
+description = "Start the observability stack"
+run = "docker compose -f deploy/observability/compose.yaml up -d"
+
+[tasks.observability-down]
+description = "Stop the observability stack"
+run = "docker compose -f deploy/observability/compose.yaml down"
+
+[tasks.observability-logs]
+description = "Follow observability stack logs"
+run = "docker compose -f deploy/observability/compose.yaml logs -f"
+
+[tasks."traillog:render"]
+description = "Render the HomeLab TrailLog mainfests"
+run = "kubectl kustomize kubernetes/apps/traillog"
+
+[tasks."traillog:status"]
+description = "Show TrailLog resources"
+run = "kubectl get pods,svc,pvc,ingress --namespace traillog"
+
+[tasks."traillog:logs"]
+description = "Follow TrailLog application logs"
+run = "kubectl logs --namespace traillog statefulset/traillog --follow"
+
+[tasks."traillog:forward"]
+description = "Forward TrailLog to localhost for diagnosis"
+run = "kubectl port-forward --namespace traillog service/traillog 8080:80"

@@ -1,0 +1,274 @@
+{{ define "hikes/index.html" }}
+  {{ template "partials/header.html" . }}
+
+
+  <div
+    class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
+  >
+    <div>
+      <p
+        class="mb-2 text-sm font-medium uppercase tracking-wider text-emerald-700"
+      >
+        Hiking journal
+      </p>
+
+      <h1 class="text-3xl font-bold tracking-tight text-stone-950">
+        Your hikes
+      </h1>
+
+      <p class="mt-2 max-w-2xl text-stone-600">
+        Routes and places you have visited or want to explore.
+      </p>
+    </div>
+
+    <a
+      href="/hikes/new"
+      hx-get="/hikes/new"
+      hx-target="#new-hike-panel"
+      hx-swap="innerHTML"
+      class="inline-flex items-center justify-center rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800"
+    >
+      Add a hike
+    </a>
+  </div>
+
+  <div id="new-hike-panel" class="mb-8" aria-live="polite"></div>
+
+  <form
+    id="hike-filters"
+    method="get"
+    action="/hikes"
+    hx-get="/hikes"
+    hx-target="#hike-results"
+    hx-swap="outerHTML"
+    hx-push-url="true"
+    hx-trigger="
+        submit,
+        input changed delay:350ms from:#hike-search,
+        change from:#hike-status,
+        change from:#hike-sort
+        change from:.hike-tag-filter
+    "
+    hx-sync="this:replace"
+    class="
+        mb-8 grid gap-4
+        rounded-2xl
+        border border-stone-200
+        bg-white p-5
+        shadow-sm
+        md:grid-cols-[1fr_auto_auto_auto]
+        md:items-end
+    "
+  >
+    <div>
+      <label
+        for="hike-search"
+        class="
+                block text-sm font-medium
+                text-stone-700
+            "
+      >
+        Search
+      </label>
+
+      <input
+        id="hike-search"
+        name="q"
+        type="search"
+        value="{{ .Filters.Query }}"
+        placeholder="Forest, Roztocze, viewpoint…"
+        class="
+                mt-2 block w-full
+                rounded-lg
+                border border-stone-300
+                bg-white px-3 py-2
+                text-stone-900
+                shadow-sm
+                outline-none
+                focus:border-emerald-600
+                focus:ring-2
+                focus:ring-emerald-600/20
+            "
+      />
+    </div>
+
+    <div>
+      <label
+        for="hike-status"
+        class="
+                block text-sm font-medium
+                text-stone-700
+            "
+      >
+        Status
+      </label>
+
+      <select
+        id="hike-status"
+        name="status"
+        class="
+                mt-2 rounded-lg
+                border border-stone-300
+                bg-white px-3 py-2
+            "
+      >
+        <option value="">All</option>
+
+        <option
+          value="planned"
+          {{ if eq .Filters.Status "planned" }}
+            selected
+          {{ end }}
+        >
+          Planned
+        </option>
+
+        <option
+          value="visited"
+          {{ if eq .Filters.Status "visited" }}
+            selected
+          {{ end }}
+        >
+          Visited
+        </option>
+      </select>
+    </div>
+
+    <div>
+      <label
+        for="hike-sort"
+        class="
+                block text-sm font-medium
+                text-stone-700
+            "
+      >
+        Sort
+      </label>
+
+      <select
+        id="hike-sort"
+        name="sort"
+        class="
+                mt-2 rounded-lg
+                border border-stone-300
+                bg-white px-3 py-2
+            "
+      >
+        <option
+          value="newest"
+          {{ if eq .Filters.Sort "newest" }}
+            selected
+          {{ end }}
+        >
+          Newest
+        </option>
+
+        <option
+          value="name"
+          {{ if eq .Filters.Sort "name" }}
+            selected
+          {{ end }}
+        >
+          Name
+        </option>
+
+        <option
+          value="distance"
+          {{ if eq .Filters.Sort "distance" }}
+            selected
+          {{ end }}
+        >
+          Distance
+        </option>
+      </select>
+    </div>
+
+    {{ if .AvailableTags }}
+      <div class="md:col-span-4">
+        <span
+          class="
+                block text-sm font-medium
+                text-stone-700
+            "
+        >
+          Tags
+        </span>
+
+        <div
+          class="
+                mt-2 flex flex-wrap gap-2
+            "
+        >
+          {{ range .AvailableTags }}
+
+            <label
+              class="
+                    cursor-pointer
+                    rounded-full
+                    border border-stone-300
+                    bg-white
+                    px-3 py-1.5
+                    text-sm
+                    text-stone-700
+                    has-[:checked]:border-emerald-600
+                    has-[:checked]:bg-emerald-50
+                    has-[:checked]:text-emerald-800
+                "
+            >
+              <input
+                type="checkbox"
+                name="tag"
+                value="{{ .Name }}"
+                {{ if index $.SelectedTags .Name }}
+                  checked
+                {{ end }}
+
+                class="
+                        hike-tag-filter
+                        sr-only
+                    "
+              />
+
+              #{{ .Name }}
+            </label>
+          {{ end }}
+        </div>
+      </div>
+    {{ end }}
+
+
+    <div class="flex gap-2">
+      <button
+        type="submit"
+        class="
+                rounded-lg
+                bg-emerald-700
+                px-4 py-2
+                text-sm font-semibold
+                text-white
+                hover:bg-emerald-800
+            "
+      >
+        Search
+      </button>
+
+      <a
+        href="/hikes"
+        class="
+                rounded-lg
+                border border-stone-300
+                px-4 py-2
+                text-sm font-medium
+                text-stone-600
+                hover:bg-stone-50
+            "
+      >
+        Clear
+      </a>
+    </div>
+  </form>
+
+  {{ template "hikes/list-results.html" . }}
+
+  {{ template "partials/footer.html" . }}
+{{ end }}
