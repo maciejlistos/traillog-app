@@ -11,6 +11,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/gin-gonic/gin"
 	"github.com/maciejlistos/traillog/internal/buildinfo"
 	"github.com/maciejlistos/traillog/internal/config"
 	"github.com/maciejlistos/traillog/internal/database"
@@ -129,6 +130,11 @@ func run() error {
 	statsHandler := hike.NewStatsHandler(hikeService)
 
 	// --- Router ---
+	// Debug mode is for local development only; any other environment name
+	// (the cluster uses "prod") gets release mode. Set before the engine is built.
+	if cfg.Environment != "development" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	router := server.NewRouter(
 		logger,
 		db,
