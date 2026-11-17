@@ -102,7 +102,7 @@ mise run container-run
 
 In the HomeLab, TrailLog runs as a single-replica StatefulSet on a Longhorn volume, with the backup sidecar writing to a separate volume, a namespace quota generated with KCL, and a tested restore Job. The manifests are in [homelab-platform/kubernetes/apps/traillog](https://github.com/maciejlistos/homelab-platform/tree/main/kubernetes/apps/traillog).
 
-Backups are moving to a dedicated Kubernetes operator: [sqlite-backup-operator](https://github.com/maciejlistos/sqlite-backup-operator).
+Backups are moving to a dedicated Kubernetes operator: sqlite-backup-operator (In progress).
 
 ## License
 
