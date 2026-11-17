@@ -24,6 +24,10 @@ RUN npm run assets:build
 
 FROM golang:1.27.0-bookworm AS builder
 
+ENV GOMAXPROCS=4
+ENV GOFLAGS="-p=4"
+
+
 WORKDIR /src
 
 COPY go.mod go.sum ./
@@ -60,7 +64,7 @@ RUN CGO_ENABLED=0 \
 RUN CGO_ENABLED=0 \
   go build \
   -trimpath \
-  -ldflabs="-s -w" \
+  -ldflags="-s -w" \
   -o /out/traillog-backup \
   ./cmd/traillog-backup
 

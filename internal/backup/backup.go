@@ -14,6 +14,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	_ "modernc.org/sqlite"
 )
 
 // CreateOptions configures one logical SQLite backup.
